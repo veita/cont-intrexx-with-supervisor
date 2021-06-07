@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<portal
+    xmlns="http://schemas.unitedplanet.de/intrexx/2012/portal/builder"
+    path="/opt/intrexx/org/portaltest"
+    name="portaltest">
+
+    <template path="/setup/portal/template1"/>
+
+    <database
+        type="mssql"
+        timezone="UTC"
+        hostName="127.0.0.1"
+        port="1433"
+        databaseName="ixportaltest"
+        adminLogin="sa"
+        adminPassword="S4tanas$"
+        create="true"
+        userLogin="sa"
+        userPassword="S4tanas$"
+        characterSet="UTF8"
+        driverIndex="0"/>
+
+    <connectorRest
+        bindAddress="0.0.0.0"
+        port="10080"/>
+
+    <connectorWeb
+        hostName="127.0.0.1"
+        port="10081"
+        baseDirectory="internal/tmp"
+        appBaseDirectory="localhost/appbase"
+        docBaseDirectory="external/htmlroot"
+        xmlBaseDirectory="localhost/xmlbase"
+        defaultWebXml="tomcat/conf/web.xml"/>
+
+    <search class="de.uplanet.lucy.search.solr.SolrPortalManagerConfiguration">
+        <property
+            name="de.uplanet.lucy.solr.authenticationType"
+            value="none">
+        </property>
+        <property
+            name="de.uplanet.lucy.solr.serverType"
+            value="http">
+        </property>
+        <property
+            name="de.uplanet.lucy.solr.configurationBaseDirectory"
+            value="/opt/intrexx/solr/server/solr">
+        </property>
+        <property
+            name="de.uplanet.lucy.solr.url"
+            value="http://localhost:8983/solr">
+        </property>
+    </search>
+</portal>
+

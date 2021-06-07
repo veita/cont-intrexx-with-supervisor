@@ -1,0 +1,10 @@
+*.swp
+*.log
+*.tar
+*.gz
+*.tgz
+*.xz
+
+pod/
+license.cfg
+run.txt
