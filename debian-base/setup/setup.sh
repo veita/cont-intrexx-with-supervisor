@@ -120,6 +120,7 @@ cat << EOF > /root/.gitconfig
   ci = commit
   lol = log --graph --decorate --pretty=oneline --abbrev-commit --all
   rr = remote -v
+  ac = !git add -A && git commit
 EOF
 
 # htop settings for root
