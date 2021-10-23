@@ -15,3 +15,4 @@ alias o='less -R'
 alias g="grep --exclude-dir .git --exclude-dir .svn --color=auto"
 alias grep="grep --exclude-dir .git --exclude-dir .svn --color=auto"
 alias dt="date --utc '+%Y-%m-%d %H:%M:%S UTC'"
+
