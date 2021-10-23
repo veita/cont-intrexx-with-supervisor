@@ -6,12 +6,10 @@ export DEBIAN_FRONTEND=noninteractive
 
 apt-get update -qy
 apt-get upgrade -qy
-apt-get install -qy sudo locales lsb-release wget curl gnupg2 less vim screen ripgrep tree unzip htop
+apt-get install -qy systemd systemd-sysv sudo locales lsb-release wget curl \
+                    gnupg2 less vim screen ripgrep tree unzip htop
 
 SUITE=$(lsb_release -sc)
-
-# install Systemd
-apt-get install -y systemd systemd-sysv
 
 # cleanup Systemd configuration
 rm -f /lib/systemd/system/multi-user.target.wants/* \
@@ -30,7 +28,16 @@ apt-get install -qy postfix
 # install SSH
 apt-get install -y openssh-server
 
-sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+# configure sshd
+if [ -f /root/.ssh/authorized_keys ]; then
+    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin prohibit-password/g' /etc/ssh/sshd_config
+else
+    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+
+    # set the root password to admin
+    echo 'root:admin' | chpasswd
+fi
+
 sed -i 's/#MaxAuthTries [0-9]\+/MaxAuthTries 32/g' /etc/ssh/sshd_config
 
 # regenerate host key on container startup
@@ -39,13 +46,10 @@ mkdir /etc/systemd/system/sshd.service.d
 cat << EOF > /etc/systemd/system/sshd.service.d/regenerate-host-keys.conf
 [Service]
 ExecStartPre=/bin/bash -c '/bin/rm /etc/ssh/ssh_host_* || :'
-ExecStartPre=/usr/sbin/dpkg-reconfigure openssh-server
+ExecStartPre=/usr/sbin/dpkg-reconfigure --frontend=noninteractive openssh-server
 EOF
 
 chmod 644 /etc/systemd/system/sshd.service.d/regenerate-host-keys.conf
-
-# set the root password to admin
-echo 'root:admin' | chpasswd
 
 # install and configure PostgreSQL
 wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add -
@@ -54,8 +58,8 @@ echo "deb http://apt.postgresql.org/pub/repos/apt/ $SUITE-pgdg main" >> /etc/apt
 apt-get update -qy
 apt-get install -qy postgresql
 
-sed -i 's/^port.*$/port = 5432/g' /etc/postgresql/13/main/postgresql.conf
-sed -i 's/md5$/trust/g' /etc/postgresql/13/main/pg_hba.conf
+sed -i 's/^port.*$/port = 5432/g' /etc/postgresql/*/main/postgresql.conf
+sed -i 's/md5$/trust/g' /etc/postgresql/*/main/pg_hba.conf
 
 $(shopt -s dotglob ; cp /etc/skel/* /var/lib/postgresql/)
 
@@ -98,61 +102,6 @@ alias v="vim"
 alias ..="cd .."
 alias ...="cd ../.."
 EOF
-
-# vim settings for root
-echo 'set mouse-=a' > /root/.vimrc
-
-# Git settings for root
-cat << EOF > /root/.gitconfig
-[user]
-  email = root@container
-  name = Container Chef
-
-[core]
-  editor = vim
-[log]
-  date = iso
-[alias]
-  st = status
-  co = checkout
-  br = branch
-  up = rebase
-  ci = commit
-  lol = log --graph --decorate --pretty=oneline --abbrev-commit --all
-  rr = remote -v
-  ac = !git add -A && git commit
-EOF
-
-# htop settings for root
-mkdir -p /root/.config/htop
-
-cat << EOF > /root/.config/htop/htoprc
-fields=0 48 17 18 38 39 40 2 46 47 49 1
-sort_key=46
-sort_direction=1
-hide_threads=1
-hide_kernel_threads=1
-hide_userland_threads=1
-shadow_other_users=0
-show_thread_names=0
-show_program_path=1
-highlight_base_name=0
-highlight_megabytes=1
-highlight_threads=1
-tree_view=1
-header_margin=1
-detailed_cpu_time=0
-cpu_count_from_zero=0
-update_process_names=0
-account_guest_in_cpu_meter=0
-color_scheme=0
-delay=15
-left_meters=LeftCPUs Memory Swap
-left_meter_modes=1 1 1
-right_meters=RightCPUs Tasks LoadAverage Uptime
-right_meter_modes=1 2 2 2
-EOF
-
 
 # services
 systemctl enable ssh

@@ -8,7 +8,7 @@ cd "${0%/*}"
 IX_SETUP_ARCHIVE="intrexx-21.03.0-linux-x86_64.tar.gz"
 DOWNLOAD_URL="https://download.unitedplanet.com/intrexx/100000/intrexx-21.03-linux-x86_64.tar.gz"
 
-SUITE=${1:-buster}
+SUITE=${1:-bullseye}
 IX_VERSION="10.0"
 TCP_PORTS="10079 10080 10081 10082 10083 10084"
 

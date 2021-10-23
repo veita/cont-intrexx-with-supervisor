@@ -12,7 +12,7 @@ apt-get update -qy
 apt-get upgrade -qy
 
 # install Git
-apt-get install -qy git
+apt-get install -qy git imagemagick
 
 # services
 systemctl disable cron.service
