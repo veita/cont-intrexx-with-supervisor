@@ -1,3 +1,5 @@
+.ssh
+
 *.swp
 *.log
 *.tar
@@ -7,4 +9,4 @@
 
 pod/
 license.cfg
-run.txt
+
