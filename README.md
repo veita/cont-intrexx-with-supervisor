@@ -1,55 +1,63 @@
-# Debian Base
+# Intrexx
 
-Set a prompt to avoid confusion: `source mkenv.sh`
+## Services
+
+* SSHD
+* Postfix
+* PostgreSQL
+* Intrexx Supervisor
+* Intrexx Solr Service
+
+The installation does not contain any portal.
+
+## Base image
+
+The base image is `localhost/debian-systemd-${SUITE}` where `${SUITE}` is either `BUSTER`,
+or `BULLSEYE`, or `BOOKWORM`.
+
+The base image is provided by the [debian-systemd](https://github.com/veita/debian-systemd)
+project.
 
 
-## Run the image build
-
-To build a Debian 10 Buster base image run
-
-```bash
-./debian-base/build-container.sh
-```
-
-To build a Debian base with another version run e.g.
-
-```bash
-./debian-base/build-container.sh bullseye
-```
-
-To build a Debian 10 Intrexx image run
-
-```bash
-./debian-intrexx/build-image-10.0.sh
-./debian-intrexx/build-image-9.2.sh
-```
-
-To build an Intrexx image with another Debian version run e.g.
+## Building the container
 
 ```bash
-./debian-intrexx/build-image-10.0.sh bullseye
-./debian-intrexx/build-image-9.2.sh stretch
+git clone https://github.com/veita/intrexx-container.git
+cd intrexx-container
+./build-image-10.0.sh
+
 ```
 
 
-## Run a container
-Base system with SSH access (root password: `admin`)
+## Running the container
+
+Run the container, e.g. with
 
 ```bash
-podman run --detach --rm --cap-add audit_write,audit_control -p=10022:22 localhost/debian-base-buster
-
-ssh -p 10022 root@localhost
+podman run --detach --rm --cap-add audit_write,audit_control -p=10022:22 -p=10079-10084:10079-10084 localhost/debian-intrexx-10.0-bullseye
 ```
 
-Intrexx system with SSH access (root password: `admin`)
+`podman ps` reports the exposed ports of the running container:
 
+```
+CONTAINER ID  IMAGE                                   COMMAND     CREATED        STATUS            PORTS                                                        NAMES
+229f33f0d414  localhost/debian-intrexx-10.0-bullseye  /sbin/init  6 seconds ago  Up 5 seconds ago  0.0.0.0:10022->22/tcp, 0.0.0.0:10079-10081->10079-10081/tcp  intrexx-10.0
+```
+
+
+## Creating new Portals
+
+### Using the Intrexx Manager
+* Remotely connect with (portable) Intrexx Manager to the exposed Manager API port (e.g. 10079)
+* Create the portal with PostgreSQL database (user `postgres`, arbitrary password)
+* Choose the exposed port (e.g. 10081) for the portal's base URL
+* Connect the browser with the portal through the exposed port (base URL)
+
+It is also possible to run Nginx as a frontend web server.
+
+### By script
+Login via SSH (root password: `admin`), then execute the portal build script, e.g.
 ```bash
-podman run --detach --rm --cap-add audit_write,audit_control -p=10022:22 -p=10079-10084:10079-10084 localhost/debian-intrexx-10.0-buster
-
-ssh -p 10022 root@localhost
+ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p 10022 root@localhost
+/setup/portal/blank/setup.sh
 ```
-
-
-## Safety
-
-Do not run `setup.sh` in your host system.

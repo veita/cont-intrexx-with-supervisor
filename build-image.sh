@@ -19,7 +19,7 @@ TCP_PORTS="$5"
 
 IMAGE="localhost/debian-intrexx-${IX_VERSION}-${SUITE}:latest"
 
-CONT=$(buildah from localhost/debian-base-${SUITE})
+CONT=$(buildah from localhost/debian-systemd-${SUITE})
 
 buildah copy $CONT setup/               /setup
 buildah copy $CONT setup-${IX_VERSION}/ /setup
