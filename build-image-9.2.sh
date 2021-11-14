@@ -5,7 +5,7 @@ set -ex
 cd "${0%/*}"
 
 # build parameters
-IX_SETUP_ARCHIVE=$(ls intrexx-19.03*.tar.gz)
+IX_SETUP_ARCHIVE=$(ls intrexx-13.03*.tar.gz || : 2>/dev/null)
 DOWNLOAD_URL="https://download.unitedplanet.com/intrexx/90200/intrexx-19.03.0-linux-x86_64.tar.gz"
 
 SUITE=${1:-bullseye}
