@@ -70,12 +70,26 @@ then
   # setup Intrexx
   ./setup.sh -t --configFile="/setup/configuration.properties"
 
-  # copy license file if one exists
-  if [ -f "/setup/license.cfg" ]
-  then
-    cp /setup/license.cfg /opt/intrexx/cfg/license.cfg
-  fi
+  # copy license file on container startup if one exists
+  mkdir /etc/systemd/system/upixsupervisor.d
+
+  cat << EOF > /etc/systemd/system/upixsupervisor.service.d/copy-license.conf
+[Service]
+ExecStartPre=/bin/bash /setup/copy-license-file.sh
+ExecStartPre=/bin/bash -c '/bin/rm /etc/systemd/system/upixsupervisor.service.d/copy-license.conf'
+EOF
+
+  chmod 644 /etc/systemd/system/upixsupervisor.service.d/copy-license.conf
 fi
+
+
+# modify .bashrc for root
+cat << EOF >> /root/.bashrc
+
+alias p='cd /opt/intrexx/org/*/'
+alias pl='less /opt/intrexx/org/*/log/portal.log'
+EOF
+
 
 # cleanup
 rm -rf /setup/tmp
