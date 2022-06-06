@@ -71,7 +71,7 @@ then
   ./setup.sh -t --configFile="/setup/configuration.properties"
 
   # copy license file on container startup if one exists
-  mkdir /etc/systemd/system/upixsupervisor.d
+  mkdir /etc/systemd/system/upixsupervisor.service.d
 
   cat << EOF > /etc/systemd/system/upixsupervisor.service.d/copy-license.conf
 [Service]
