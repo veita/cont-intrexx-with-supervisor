@@ -1,5 +1,7 @@
 # Intrexx
 
+Container image for Intrexx versions with a Supervisor service.
+
 ## Services
 
 * SSHD
@@ -22,10 +24,9 @@ project.
 ## Building the container
 
 ```bash
-git clone https://github.com/veita/intrexx-container.git
-cd intrexx-container
+git clone https://github.com/veita/cont-intrexx-with-supervisor.git intrexx-with-supervisor
+cd intrexx-with-supervisor
 ./build-image-10.0.sh
-
 ```
 
 
